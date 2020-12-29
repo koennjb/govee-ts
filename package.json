@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A TypeScript client to interact with the Govee API",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "start": "npm run build:live",
     "build": "tsc -p .",
@@ -13,7 +14,8 @@
     "prepare" : "npm run build",
     "prepublishOnly" : "npm test && npm run lint",
     "preversion" : "npm run lint",
-    "version" : "npm run lint && git add -A src"
+    "version" : "npm run lint && git add -A src",
+    "postversion" : "git push && git push --tags"
   },
   "devDependencies": {
     "@types/node": "^14.14.14",
