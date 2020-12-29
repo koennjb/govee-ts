@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "outDir": "lib",
+    "noEmit": false,
+    "sourceMap": true, // Helps debugging by mapping compiled JS files to orig. TS files
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true, // Forces fields to be initialized or in constructor
+    "suppressImplicitAnyIndexErrors": false, // don't use [] on objects that don't support it
+    "allowUmdGlobalAccess": false, // Forces import React from 'react'
+    "allowUnusedLabels": false,
+    "alwaysStrict": true,
+    "declaration": true,
+    "noFallthroughCasesInSwitch": true, // Forces break statements
+    "noImplicitAny": true, // Error when "any" type is used
+    "noImplicitReturns": true, // Error when not all paths return
+    "noImplicitThis": true,
+    "noUnusedLocals": false, // No unused variables
+    "noUnusedParameters": false, 
+    "removeComments": true, // Removes comments from compiled JS
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules",],
+}
