@@ -15,6 +15,20 @@ export interface DeviceI {
   retrievable: boolean;
   supportCmds: string[];
 }
+
+export interface DeviceState {
+  model: string;
+  device: string;
+  name: string;
+  properties: {
+    online: boolean;
+    powerState: 'off' | 'on';
+    brightness: number;
+    color?: GoveeColor;
+    colorTem?: number;
+  }[];
+}
+
 export interface GoveeColor {
   r: number;
   g: number;
@@ -66,6 +80,25 @@ export default class Govee {
 
   public getDevice(name: string): GoveeDevice | undefined {
     return this.devices.get(name);
+  }
+
+  public async getState(device: string, model: string): Promise<GoveeResponse<DeviceState>> {
+    const result = await axios.get(BASE_PATH + '/devices/state', {
+      params: {
+        device: device,
+        model: model,
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        'Govee-API-Key': this.apiKey,
+      },
+    });
+
+    return {
+      data: result.data.data,
+      message: result.data.message,
+      code: result.data.code,
+    };
   }
 
   public async setPower(

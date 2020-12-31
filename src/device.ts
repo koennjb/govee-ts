@@ -1,4 +1,4 @@
-import Govee, { GoveeColor } from './govee';
+import Govee, { DeviceState, GoveeColor } from './govee';
 
 export class GoveeDevice {
   name: string;
@@ -25,6 +25,15 @@ export class GoveeDevice {
     this.controllable = controllable;
     this.retrievable = retrievable;
     this.govee = govee;
+  }
+
+  public async getState(): Promise<DeviceState | undefined> {
+    const result = await this.govee.getState(this.device, this.model);
+    if (result.code === 200) {
+      return result.data;
+    } else {
+      return undefined;
+    }
   }
 
   public async turnOn(): Promise<boolean> {

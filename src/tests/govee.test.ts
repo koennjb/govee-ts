@@ -53,6 +53,59 @@ describe('Govee', () => {
     expect(govee.getDevice('noDevice')).toBeUndefined();
   });
 
+  it('gets device state', async () => {
+    mockedAxios.get.mockReturnValueOnce(
+      Promise.resolve({
+        data: {
+          data: {
+            device: 'testMac',
+            model: 'testModel',
+            name: 'test1',
+            properties: [
+              {
+                online: true,
+                powerState: 'off',
+                brightness: 82,
+                color: {
+                  r: 50,
+                  g: 50,
+                  b: 50,
+                },
+              },
+            ],
+          },
+          message: 'testMessage',
+          code: 200,
+        },
+      }),
+    );
+
+    const result = await govee.getState('testMac', 'testModel');
+    expect(result.code).toBe(200);
+    expect(result.message).toBe('testMessage');
+    expect(result.data.device).toBe('testMac');
+    expect(result.data.model).toBe('testModel');
+    expect(result.data.name).toBe('test1');
+    expect(result.data.properties[0].brightness).toBe(82);
+    expect(result.data.properties[0].online).toBe(true);
+    expect(result.data.properties[0].powerState).toBe('off');
+    expect(result.data.properties[0].color).toEqual({ r: 50, b: 50, g: 50 });
+
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'https://developer-api.govee.com/v1/devices/state',
+      {
+        params: {
+          device: 'testMac',
+          model: 'testModel',
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          'Govee-API-Key': KEY,
+        },
+      },
+    );
+  });
+
   it('sets the power', async () => {
     mockedAxios.put.mockReturnValueOnce(
       Promise.resolve({

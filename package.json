@@ -1,6 +1,6 @@
 {
   "name": "govee-client-ts",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A TypeScript client to interact with the Govee API",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

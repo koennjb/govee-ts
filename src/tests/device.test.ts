@@ -38,6 +38,105 @@ describe('GoveeDevice', () => {
     mockedAxios.put.mockReset();
   });
 
+  it('gets state', async () => {
+    mockedAxios.get.mockReturnValueOnce(
+      Promise.resolve({
+        data: {
+          data: {
+            device: 'testDevice',
+            model: 'testModel',
+            name: 'test1',
+            properties: [
+              {
+                online: true,
+                powerState: 'off',
+                brightness: 82,
+                color: {
+                  r: 50,
+                  g: 50,
+                  b: 50,
+                },
+              },
+            ],
+          },
+          message: 'testMessage',
+          code: 200,
+        },
+      }),
+    );
+
+    const device = govee.getDevice('test1');
+    const result = await device?.getState();
+    expect(result).toBeDefined();
+    expect(result?.device).toBe('testDevice');
+    expect(result?.model).toBe('testModel');
+    expect(result?.name).toBe('test1');
+    expect(result?.properties[0].brightness).toBe(82);
+    expect(result?.properties[0].online).toBe(true);
+    expect(result?.properties[0].powerState).toBe('off');
+    expect(result?.properties[0].color).toEqual({ r: 50, b: 50, g: 50 });
+
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'https://developer-api.govee.com/v1/devices/state',
+      {
+        params: {
+          device: 'testDevice',
+          model: 'testModel',
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          'Govee-API-Key': KEY,
+        },
+      },
+    );
+  });
+
+  it('gets state with failure', async () => {
+    mockedAxios.get.mockReturnValueOnce(
+      Promise.resolve({
+        data: {
+          data: {
+            device: 'testDevice',
+            model: 'testModel',
+            name: 'test1',
+            properties: [
+              {
+                online: true,
+                powerState: 'off',
+                brightness: 82,
+                color: {
+                  r: 50,
+                  g: 50,
+                  b: 50,
+                },
+              },
+            ],
+          },
+          message: 'testMessage',
+          code: 401, // Error code
+        },
+      }),
+    );
+
+    const device = govee.getDevice('test1');
+    const result = await device?.getState();
+    expect(result).toBeFalsy();
+
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'https://developer-api.govee.com/v1/devices/state',
+      {
+        params: {
+          device: 'testDevice',
+          model: 'testModel',
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          'Govee-API-Key': KEY,
+        },
+      },
+    );
+  });
+
   it('turns on', async () => {
     mockedAxios.put.mockReturnValueOnce(
       Promise.resolve({
