@@ -1,5 +1,7 @@
 # TypeScript Govee Client
 
+[![CI](https://img.shields.io/github/workflow/status/koennjb/govee-ts/CI)](https://img.shields.io/github/workflow/status/koennjb/govee-ts/CI) ![Codecov](https://img.shields.io/codecov/c/github/koennjb/govee-ts) ![npm type definitions](https://img.shields.io/npm/types/typescript)
+
 This package uses the **Govee HTTP API v1.1** to control Govee smart LEDs. It is written in TypeScript so there is full type support. Behind the scenes, it uses Axios so this package should be supported on all browsers.
 
 # API Key
