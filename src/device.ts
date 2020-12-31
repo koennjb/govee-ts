@@ -7,6 +7,7 @@ export class GoveeDevice {
   supportCmds: string[];
   controllable: boolean;
   retrievable: boolean;
+  govee: Govee;
 
   public constructor(
     name: string,
@@ -15,6 +16,7 @@ export class GoveeDevice {
     supportCmds: string[],
     controllable: boolean,
     retrievable: boolean,
+    govee: Govee,
   ) {
     this.name = name;
     this.model = model;
@@ -22,10 +24,11 @@ export class GoveeDevice {
     this.supportCmds = supportCmds;
     this.controllable = controllable;
     this.retrievable = retrievable;
+    this.govee = govee;
   }
 
   public async turnOn(): Promise<boolean> {
-    const result = await Govee.getInstance().setPower(this.device, this.model, true);
+    const result = await this.govee.setPower(this.device, this.model, true);
     if (result.code == 200) {
       return true;
     } else {
@@ -34,7 +37,7 @@ export class GoveeDevice {
   }
 
   public async turnOff(): Promise<boolean> {
-    const result = await Govee.getInstance().setPower(this.device, this.model, false);
+    const result = await this.govee.setPower(this.device, this.model, false);
     if (result.code == 200) {
       return true;
     } else {
@@ -43,7 +46,7 @@ export class GoveeDevice {
   }
 
   public async setBrightness(brightness: number): Promise<boolean> {
-    const result = await Govee.getInstance().setBrightness(this.device, this.model, brightness);
+    const result = await this.govee.setBrightness(this.device, this.model, brightness);
     if (result.code == 200) {
       return true;
     } else {
@@ -52,7 +55,7 @@ export class GoveeDevice {
   }
 
   public async setRGBColor(color: GoveeColor): Promise<boolean> {
-    const result = await Govee.getInstance().setColor(this.device, this.model, color);
+    const result = await this.govee.setColor(this.device, this.model, color);
     if (result.code == 200) {
       return true;
     } else {
@@ -61,7 +64,7 @@ export class GoveeDevice {
   }
 
   public async setHexColor(hex: string): Promise<boolean> {
-    const result = await Govee.getInstance().setColor(this.device, this.model, this.hexToRgb(hex));
+    const result = await this.govee.setColor(this.device, this.model, this.hexToRgb(hex));
     if (result.code == 200) {
       return true;
     } else {

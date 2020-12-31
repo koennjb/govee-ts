@@ -7,29 +7,10 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('Govee', () => {
   const KEY = 'testKey';
-  let govee: Govee | undefined;
+  const govee: Govee = new Govee(KEY);
 
   beforeEach(() => {
     mockedAxios.put.mockReset();
-  });
-
-  it('throws error when instance has not been created', () => {
-    expect(Govee.getInstance).toThrow(
-      'Error: no Govee instance has been instantiated. Please create a new one first.',
-    );
-    govee = new Govee(KEY);
-  });
-
-  it('returns the existing intance', () => {
-    expect(Govee.getInstance()).toBeDefined();
-  });
-
-  it('throws an error when an instance has already been created', () => {
-    expect(() => {
-      new Govee(KEY);
-    }).toThrow(
-      'Error instantiating class Govee, an instance has already been created. Use Govee.getInstance() instead.',
-    );
   });
 
   it('gets all devices', async () => {
@@ -53,7 +34,8 @@ describe('Govee', () => {
         },
       }),
     );
-    const result = await govee!.getDevices();
+
+    const result = await govee.getDevices();
     expect(mockedAxios.get).toHaveBeenCalledWith('https://developer-api.govee.com/v1/devices', {
       headers: {
         'Govee-API-Key': KEY,
@@ -62,46 +44,13 @@ describe('Govee', () => {
     expect(result.length).toBe(1);
     expect(result[0].name).toBe('test1');
 
-    govee!.getDevices();
+    govee.getDevices();
   });
 
   it('gets a specific device', () => {
-    const device = govee!.getDevice('test1');
+    const device = govee.getDevice('test1');
     expect(device).toBeDefined();
-    expect(govee!.getDevice('noDevice')).toBeUndefined();
-  });
-
-  it('powers on a device', async () => {
-    const device = govee!.getDevice('test1');
-    mockedAxios.put.mockReturnValueOnce(
-      Promise.resolve({
-        data: {
-          data: {},
-          message: 'testMessage',
-          code: 200,
-        },
-      }),
-    );
-
-    await device?.turnOn();
-
-    expect(mockedAxios.put).toHaveBeenCalledWith(
-      'https://developer-api.govee.com/v1/devices/control',
-      {
-        device: 'testMac',
-        model: 'testModel',
-        cmd: {
-          name: CMD_TURN,
-          value: 'on',
-        },
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Govee-API-Key': KEY,
-        },
-      },
-    );
+    expect(govee.getDevice('noDevice')).toBeUndefined();
   });
 
   it('sets the power', async () => {
@@ -114,7 +63,7 @@ describe('Govee', () => {
         },
       }),
     );
-    let result = await govee!.setPower('testDevice', 'testModel', false);
+    let result = await govee.setPower('testDevice', 'testModel', false);
     expect(mockedAxios.put).toHaveBeenCalledWith(
       'https://developer-api.govee.com/v1/devices/control',
       {
@@ -144,7 +93,7 @@ describe('Govee', () => {
         },
       }),
     );
-    result = await govee!.setPower('testDevice', 'testModel', true);
+    result = await govee.setPower('testDevice', 'testModel', true);
     expect(mockedAxios.put).toHaveBeenCalledWith(
       'https://developer-api.govee.com/v1/devices/control',
       {
@@ -176,7 +125,7 @@ describe('Govee', () => {
         },
       }),
     );
-    const result = await govee!.setBrightness('testDevice', 'testModel', 50);
+    const result = await govee.setBrightness('testDevice', 'testModel', 50);
     expect(mockedAxios.put).toHaveBeenCalledWith(
       'https://developer-api.govee.com/v1/devices/control',
       {
@@ -208,7 +157,7 @@ describe('Govee', () => {
         },
       }),
     );
-    const result = await govee!.setColor('testDevice', 'testModel', {
+    const result = await govee.setColor('testDevice', 'testModel', {
       r: 255,
       g: 94,
       b: 94,
@@ -249,7 +198,7 @@ describe('Govee', () => {
       }),
     );
 
-    const result = await govee!.setTemperature('testDevice', 'testModel', 7000);
+    const result = await govee.setTemperature('testDevice', 'testModel', 7000);
     expect(mockedAxios.put).toHaveBeenCalledWith(
       'https://developer-api.govee.com/v1/devices/control',
       {

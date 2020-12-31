@@ -23,32 +23,10 @@ export interface GoveeColor {
 
 export default class Govee {
   private apiKey: string;
-  private static instance: Govee;
   private devices: Map<string, GoveeDevice> = new Map();
 
-  /**
-   * Creates a new Govee client given the API key. If one has already been instantiated, this will fail.
-   */
   public constructor(apiKey: string) {
-    if (Govee.instance) {
-      throw new Error(
-        'Error instantiating class Govee, an instance has already been created. Use Govee.getInstance() instead.',
-      );
-    }
     this.apiKey = apiKey;
-    Govee.instance = this;
-  }
-
-  /**
-   * Gets the singleton instance of the Govee client. If no client has been instantiated yet, this will fail.
-   */
-  public static getInstance(): Govee {
-    if (!Govee.instance) {
-      throw new Error(
-        'Error: no Govee instance has been instantiated. Please create a new one first.',
-      );
-    }
-    return Govee.instance;
   }
 
   private async retrieveDevices(): Promise<GoveeResponse<GoveeDevice[]>> {
@@ -68,6 +46,7 @@ export default class Govee {
             device.supportCmds,
             device.controllable,
             device.retrievable,
+            this,
           ),
       ),
       message: result.data.message,
