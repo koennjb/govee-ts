@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Govee from '..';
-import { CMD_BRIGHTNESS, CMD_COLOR, CMD_TURN } from '../constants';
+import { CMD_BRIGHTNESS, CMD_COLOR, CMD_COLOR_TEMP, CMD_TURN } from '../constants';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -501,6 +501,72 @@ describe('GoveeDevice', () => {
         cmd: {
           name: CMD_COLOR,
           value: { r: 50, b: 50, g: 50 },
+        },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Govee-API-Key': KEY,
+        },
+      },
+    );
+  });
+
+  it('sets color temperature', async () => {
+    mockedAxios.put.mockReturnValueOnce(
+      Promise.resolve({
+        data: {
+          data: {},
+          message: 'testMessage',
+          code: 200,
+        },
+      }),
+    );
+
+    const device = govee.getDevice('test1');
+    const result = await device?.setColorTemperature(6000);
+    expect(result).toBeTruthy();
+    expect(mockedAxios.put).toHaveBeenCalledWith(
+      'https://developer-api.govee.com/v1/devices/control',
+      {
+        device: 'testDevice',
+        model: 'testModel',
+        cmd: {
+          name: CMD_COLOR_TEMP,
+          value: 6000,
+        },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Govee-API-Key': KEY,
+        },
+      },
+    );
+  });
+
+  it('sets color temperature and returns false on error', async () => {
+    mockedAxios.put.mockReturnValueOnce(
+      Promise.resolve({
+        data: {
+          data: {},
+          message: 'testMessage',
+          code: 401, // Error code
+        },
+      }),
+    );
+
+    const device = govee.getDevice('test1');
+    const result = await device?.setColorTemperature(6000);
+    expect(result).toBeFalsy();
+    expect(mockedAxios.put).toHaveBeenCalledWith(
+      'https://developer-api.govee.com/v1/devices/control',
+      {
+        device: 'testDevice',
+        model: 'testModel',
+        cmd: {
+          name: CMD_COLOR_TEMP,
+          value: 6000,
         },
       },
       {
