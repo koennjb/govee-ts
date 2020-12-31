@@ -1,6 +1,6 @@
 import axios from 'axios';
-import Govee from '..';
-import { CMD_BRIGHTNESS, CMD_COLOR, CMD_COLOR_TEMP, CMD_TURN } from '../constants';
+import Govee from '../src';
+import { CMD_BRIGHTNESS, CMD_COLOR, CMD_COLOR_TEMP, CMD_TURN } from '../src/constants';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;

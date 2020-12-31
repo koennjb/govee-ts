@@ -12,7 +12,7 @@
     "resolveJsonModule": true,
     "outDir": "lib",
     "noEmit": false,
-    "sourceMap": true, // Helps debugging by mapping compiled JS files to orig. TS files
+    "sourceMap": false, // Helps debugging by mapping compiled JS files to orig. TS files
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true, // Forces fields to be initialized or in constructor
@@ -30,5 +30,5 @@
     "removeComments": true, // Removes comments from compiled JS
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules",],
+  "exclude": ["node_modules", "tests"],
 }
