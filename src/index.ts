@@ -1,4 +1,2 @@
-***REMOVED***
-***REMOVED***
-
-***REMOVED***
+import Govee from './govee';
+export default Govee;

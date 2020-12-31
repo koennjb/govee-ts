@@ -7,7 +7,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('Govee', () => {
   const KEY = 'testKey';
-  let govee: any;
+  let govee: Govee | undefined;
 
   beforeEach(() => {
     mockedAxios.put.mockReset();
@@ -37,19 +37,71 @@ describe('Govee', () => {
       Promise.resolve({
         data: {
           data: {
-            devices: ['test'],
+            devices: [
+              {
+                deviceName: 'test1',
+                model: 'testModel',
+                device: 'testMac',
+                controllable: true,
+                retrievable: true,
+                supportCmds: ['TURN'],
+              },
+            ],
           },
           message: 'testMessage',
           code: 200,
         },
       }),
     );
-    const result = await govee.getDevices();
+    const result = await govee!.getDevices();
     expect(mockedAxios.get).toHaveBeenCalledWith('https://developer-api.govee.com/v1/devices', {
       headers: {
         'Govee-API-Key': KEY,
       },
     });
+    expect(result.length).toBe(1);
+    expect(result[0].name).toBe('test1');
+
+    govee!.getDevices();
+  });
+
+  it('gets a specific device', () => {
+    const device = govee!.getDevice('test1');
+    expect(device).toBeDefined();
+    expect(govee!.getDevice('noDevice')).toBeUndefined();
+  });
+
+  it('powers on a device', async () => {
+    const device = govee!.getDevice('test1');
+    mockedAxios.put.mockReturnValueOnce(
+      Promise.resolve({
+        data: {
+          data: {},
+          message: 'testMessage',
+          code: 200,
+        },
+      }),
+    );
+
+    await device?.turnOn();
+
+    expect(mockedAxios.put).toHaveBeenCalledWith(
+      'https://developer-api.govee.com/v1/devices/control',
+      {
+        device: 'testMac',
+        model: 'testModel',
+        cmd: {
+          name: CMD_TURN,
+          value: 'on',
+        },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Govee-API-Key': KEY,
+        },
+      },
+    );
   });
 
   it('sets the power', async () => {
@@ -62,7 +114,7 @@ describe('Govee', () => {
         },
       }),
     );
-    let result = await govee.setPower('testDevice', 'testModel', false);
+    let result = await govee!.setPower('testDevice', 'testModel', false);
     expect(mockedAxios.put).toHaveBeenCalledWith(
       'https://developer-api.govee.com/v1/devices/control',
       {
@@ -92,7 +144,7 @@ describe('Govee', () => {
         },
       }),
     );
-    result = await govee.setPower('testDevice', 'testModel', true);
+    result = await govee!.setPower('testDevice', 'testModel', true);
     expect(mockedAxios.put).toHaveBeenCalledWith(
       'https://developer-api.govee.com/v1/devices/control',
       {
@@ -124,7 +176,7 @@ describe('Govee', () => {
         },
       }),
     );
-    const result = await govee.setBrightness('testDevice', 'testModel', 50);
+    const result = await govee!.setBrightness('testDevice', 'testModel', 50);
     expect(mockedAxios.put).toHaveBeenCalledWith(
       'https://developer-api.govee.com/v1/devices/control',
       {
@@ -156,7 +208,11 @@ describe('Govee', () => {
         },
       }),
     );
-    const result = await govee.setColor('testDevice', 'testModel', '#ff5e5e');
+    const result = await govee!.setColor('testDevice', 'testModel', {
+      r: 255,
+      g: 94,
+      b: 94,
+    });
     expect(mockedAxios.put).toHaveBeenCalledWith(
       'https://developer-api.govee.com/v1/devices/control',
       {
@@ -182,43 +238,6 @@ describe('Govee', () => {
     expect(result.message).toBe('testMessage');
   });
 
-  it('sets the default color to white with malformed hex code', async () => {
-    mockedAxios.put.mockReturnValueOnce(
-      Promise.resolve({
-        data: {
-          data: {},
-          message: 'testMessage',
-          code: 200,
-        },
-      }),
-    );
-    // ! Color code is too long.
-    const result = await govee.setColor('testDevice', 'testModel', 'ff5e5ea');
-    expect(mockedAxios.put).toHaveBeenCalledWith(
-      'https://developer-api.govee.com/v1/devices/control',
-      {
-        device: 'testDevice',
-        model: 'testModel',
-        cmd: {
-          name: CMD_COLOR,
-          value: {
-            r: 255,
-            g: 255,
-            b: 255,
-          },
-        },
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Govee-API-Key': KEY,
-        },
-      },
-    );
-    expect(result.code).toBe(200);
-    expect(result.message).toBe('testMessage');
-  });
-
   it('sets the color temperature', async () => {
     mockedAxios.put.mockReturnValueOnce(
       Promise.resolve({
@@ -230,7 +249,7 @@ describe('Govee', () => {
       }),
     );
 
-    const result = await govee.setTemperature('testDevice', 'testModel', 7000);
+    const result = await govee!.setTemperature('testDevice', 'testModel', 7000);
     expect(mockedAxios.put).toHaveBeenCalledWith(
       'https://developer-api.govee.com/v1/devices/control',
       {

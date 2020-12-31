@@ -1,21 +1,21 @@
 import axios from 'axios';
 import { BASE_PATH, CMD_BRIGHTNESS, CMD_COLOR, CMD_COLOR_TEMP, CMD_TURN } from './constants';
+import { GoveeDevice } from './device';
 
 interface GoveeResponse<T> {
   code: number;
   message: string;
   data: T;
 }
-
-interface Device {
+export interface DeviceI {
+  deviceName: string;
   model: string;
   device: string;
   controllable: boolean;
   retrievable: boolean;
   supportCmds: string[];
 }
-
-interface GoveeColor {
+export interface GoveeColor {
   r: number;
   g: number;
   b: number;
@@ -24,6 +24,7 @@ interface GoveeColor {
 export default class Govee {
   private apiKey: string;
   private static instance: Govee;
+  private devices: Map<string, GoveeDevice> = new Map();
 
   /**
    * Creates a new Govee client given the API key. If one has already been instantiated, this will fail.
@@ -50,17 +51,42 @@ export default class Govee {
     return Govee.instance;
   }
 
-  public async getDevices(): Promise<GoveeResponse<Device[]>> {
+  private async retrieveDevices(): Promise<GoveeResponse<GoveeDevice[]>> {
     const result = await axios.get(BASE_PATH + '/devices', {
       headers: {
         'Govee-API-Key': this.apiKey,
       },
     });
+
     return {
-      data: result.data.data.devices,
+      data: result.data.data.devices.map(
+        (device: DeviceI) =>
+          new GoveeDevice(
+            device.deviceName,
+            device.model,
+            device.device,
+            device.supportCmds,
+            device.controllable,
+            device.retrievable,
+          ),
+      ),
       message: result.data.message,
       code: result.data.code,
     };
+  }
+
+  public async getDevices(): Promise<GoveeDevice[]> {
+    if (this.devices.size <= 0) {
+      const deviceList = await this.retrieveDevices();
+      deviceList.data.forEach((device) => {
+        this.devices.set(device.name, device);
+      });
+    }
+    return Array.from(this.devices.values());
+  }
+
+  public getDevice(name: string): GoveeDevice | undefined {
+    return this.devices.get(name);
   }
 
   public async setPower(
@@ -126,7 +152,7 @@ export default class Govee {
   public async setColor(
     device: string,
     model: string,
-    color: string,
+    color: GoveeColor,
   ): Promise<GoveeResponse<Record<string, never>>> {
     const result = await axios.put(
       BASE_PATH + '/devices/control',
@@ -135,7 +161,7 @@ export default class Govee {
         model: model,
         cmd: {
           name: CMD_COLOR,
-          value: this.hexToRgb(color),
+          value: color,
         },
       },
       {
@@ -181,16 +207,5 @@ export default class Govee {
       message: result.data.message,
       code: result.data.code,
     };
-  }
-
-  private hexToRgb(color: string): GoveeColor {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
-    return result
-      ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16),
-        }
-      : { r: 255, g: 255, b: 255 };
   }
 }
