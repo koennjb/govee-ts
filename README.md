@@ -2,7 +2,7 @@
 
 [![CI](https://img.shields.io/github/workflow/status/koennjb/govee-ts/CI)](https://img.shields.io/github/workflow/status/koennjb/govee-ts/CI) ![Codecov](https://img.shields.io/codecov/c/github/koennjb/govee-ts) ![npm type definitions](https://img.shields.io/npm/types/typescript)
 
-This package uses the **Govee HTTP API v1.1** to control Govee smart LEDs. It is written in TypeScript so there is full type support. Behind the scenes, it uses Axios so this package should be supported on all browsers.
+This package uses the **Govee HTTP API v1.1** to control Govee smart LEDs in NodeJS. It is written in TypeScript so there is full type support. Behind the scenes, it uses Axios so this package should be supported on all browsers.
 
 # API Key
 
@@ -23,7 +23,11 @@ Most of the methods to get/control devices in this API are asynchronous. You can
 
 ## Instantiate client
 
+    // Import using ES6 syntax
     import Govee from 'govee-ts';
+
+    // If using CommonJS (requires)
+    const Govee = require('govee-ts').default;
 
     var client = new Govee("<your API key here>");
 
