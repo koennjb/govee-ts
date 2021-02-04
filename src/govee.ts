@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { BASE_PATH, CMD_BRIGHTNESS, CMD_COLOR, CMD_COLOR_TEMP, CMD_TURN } from './constants';
 import { GoveeDevice } from './device';
+import { GoveeDeviceCollection } from './device-collection';
 
 interface GoveeResponse<T> {
   code: number;
@@ -76,6 +77,38 @@ export default class Govee {
       });
     }
     return Array.from(this.devices.values());
+  }
+
+  public getAllCollection(): GoveeDeviceCollection {
+    const devices: GoveeDevice[] = Array.from(this.devices.values());
+    const collection: GoveeDeviceCollection = new GoveeDeviceCollection(devices, this);
+    return collection;
+  }
+
+  /**
+   * Given a list of device names as a string, return a DeviceCollection containing
+   * devices that match the names given. The names are NOT case sensitive.
+   */
+  public getCollection(deviceNames: string[]): GoveeDeviceCollection {
+    const devices: GoveeDevice[] = Array.from(this.devices.values()).filter(
+      (device: GoveeDevice) => {
+        return deviceNames.map((name) => name.toLowerCase()).includes(device.name.toLowerCase());
+      },
+    );
+    const collection: GoveeDeviceCollection = new GoveeDeviceCollection(devices, this);
+    return collection;
+  }
+
+  public async getDeviceNames(): Promise<string[]> {
+    if (this.devices.size <= 0) {
+      const deviceList = await this.retrieveDevices();
+      deviceList.data.forEach((device) => {
+        this.devices.set(device.name, device);
+      });
+    }
+    return Array.from(this.devices.values()).map((device: GoveeDevice) => {
+      return device.name;
+    });
   }
 
   public getDevice(name: string): GoveeDevice | undefined {
