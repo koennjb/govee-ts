@@ -27,6 +27,14 @@ describe('Govee', () => {
                 retrievable: true,
                 supportCmds: ['TURN'],
               },
+              {
+                deviceName: 'test2',
+                model: 'testModel2',
+                device: 'testMac2',
+                controllable: true,
+                retrievable: true,
+                supportCmds: ['TURN'],
+              },
             ],
           },
           message: 'testMessage',
@@ -41,10 +49,39 @@ describe('Govee', () => {
         'Govee-API-Key': KEY,
       },
     });
-    expect(result.length).toBe(1);
+    expect(result.length).toBe(2);
     expect(result[0].name).toBe('test1');
+  });
 
-    govee.getDevices();
+  it('gets all device names', async () => {
+    const names = await govee.getDeviceNames();
+    expect(names.length).toBe(2);
+    expect(names[0]).toBe('test1');
+    expect(names[1]).toBe('test2');
+  });
+
+  it('gets a collection of all devices', async () => {
+    const result = await govee.getAllCollection();
+    expect(result.devices.length).toBe(2);
+    expect(result.devices[0].name).toBe('test1');
+    expect(result.devices[1].name).toBe('test2');
+  });
+
+  it('gets a collection of all devices', async () => {
+    const result = await govee.getAllCollection();
+    expect(result.devices.length).toBe(2);
+    expect(result.devices[0].name).toBe('test1');
+    expect(result.devices[1].name).toBe('test2');
+  });
+
+  it('gets a collection of specified devices', async () => {
+    const result = await govee.getCollection(['test1', 'test2']);
+    expect(result.devices.length).toBe(2);
+    expect(result.devices[0].name).toBe('test1');
+    expect(result.devices[1].name).toBe('test2');
+
+    const notValid = await govee.getCollection(['does not exist']);
+    expect(notValid.devices.length).toBe(0);
   });
 
   it('gets a specific device', () => {

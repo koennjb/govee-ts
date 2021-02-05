@@ -1,13 +1,11 @@
 import { GoveeDevice } from './device';
-import Govee, { GoveeColor } from './govee';
+import { GoveeColor } from './govee';
 
 export class GoveeDeviceCollection {
   readonly devices: GoveeDevice[];
-  govee: Govee;
 
-  public constructor(devices: GoveeDevice[], govee: Govee) {
+  public constructor(devices: GoveeDevice[]) {
     this.devices = devices;
-    this.govee = govee;
   }
 
   public async turnOn(): Promise<boolean> {

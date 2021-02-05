@@ -79,34 +79,26 @@ export default class Govee {
     return Array.from(this.devices.values());
   }
 
-  public getAllCollection(): GoveeDeviceCollection {
-    const devices: GoveeDevice[] = Array.from(this.devices.values());
-    const collection: GoveeDeviceCollection = new GoveeDeviceCollection(devices, this);
+  public async getAllCollection(): Promise<GoveeDeviceCollection> {
+    const devices: GoveeDevice[] = await this.getDevices();
+    const collection: GoveeDeviceCollection = new GoveeDeviceCollection(devices);
     return collection;
   }
 
   /**
    * Given a list of device names as a string, return a DeviceCollection containing
-   * devices that match the names given. The names are NOT case sensitive.
+   * devices that match the names given. The names are case sensitive.
    */
-  public getCollection(deviceNames: string[]): GoveeDeviceCollection {
-    const devices: GoveeDevice[] = Array.from(this.devices.values()).filter(
-      (device: GoveeDevice) => {
-        return deviceNames.map((name) => name.toLowerCase()).includes(device.name.toLowerCase());
-      },
-    );
-    const collection: GoveeDeviceCollection = new GoveeDeviceCollection(devices, this);
+  public async getCollection(deviceNames: string[]): Promise<GoveeDeviceCollection> {
+    const devices: GoveeDevice[] = (await this.getDevices()).filter((device: GoveeDevice) => {
+      return deviceNames.some((desiredName: string) => device.name === desiredName);
+    });
+    const collection: GoveeDeviceCollection = new GoveeDeviceCollection(devices);
     return collection;
   }
 
   public async getDeviceNames(): Promise<string[]> {
-    if (this.devices.size <= 0) {
-      const deviceList = await this.retrieveDevices();
-      deviceList.data.forEach((device) => {
-        this.devices.set(device.name, device);
-      });
-    }
-    return Array.from(this.devices.values()).map((device: GoveeDevice) => {
+    return (await this.getDevices()).map((device: GoveeDevice) => {
       return device.name;
     });
   }
