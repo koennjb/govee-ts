@@ -1,7 +1,7 @@
 import { GoveeDevice } from './device';
 import { GoveeColor } from './govee';
 
-export class GoveeDeviceCollection {
+export class GoveeControlGroup {
   readonly devices: GoveeDevice[];
 
   public constructor(devices: GoveeDevice[]) {

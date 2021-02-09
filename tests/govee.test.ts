@@ -60,27 +60,27 @@ describe('Govee', () => {
     expect(names[1]).toBe('test2');
   });
 
-  it('gets a collection of all devices', async () => {
-    const result = await govee.getAllCollection();
+  it('gets a control group of all devices', async () => {
+    const result = await govee.getAllGroup();
     expect(result.devices.length).toBe(2);
     expect(result.devices[0].name).toBe('test1');
     expect(result.devices[1].name).toBe('test2');
   });
 
-  it('gets a collection of all devices', async () => {
-    const result = await govee.getAllCollection();
+  it('gets a control group of all devices', async () => {
+    const result = await govee.getAllGroup();
     expect(result.devices.length).toBe(2);
     expect(result.devices[0].name).toBe('test1');
     expect(result.devices[1].name).toBe('test2');
   });
 
-  it('gets a collection of specified devices', async () => {
-    const result = await govee.getCollection(['test1', 'test2']);
+  it('gets a control group of specified devices', async () => {
+    const result = await govee.getControlGroup(['test1', 'test2']);
     expect(result.devices.length).toBe(2);
     expect(result.devices[0].name).toBe('test1');
     expect(result.devices[1].name).toBe('test2');
 
-    const notValid = await govee.getCollection(['does not exist']);
+    const notValid = await govee.getControlGroup(['does not exist']);
     expect(notValid.devices.length).toBe(0);
   });
 

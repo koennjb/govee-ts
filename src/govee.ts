@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BASE_PATH, CMD_BRIGHTNESS, CMD_COLOR, CMD_COLOR_TEMP, CMD_TURN } from './constants';
 import { GoveeDevice } from './device';
-import { GoveeDeviceCollection } from './device-collection';
+import { GoveeControlGroup } from './control-group';
 
 interface GoveeResponse<T> {
   code: number;
@@ -79,22 +79,22 @@ export default class Govee {
     return Array.from(this.devices.values());
   }
 
-  public async getAllCollection(): Promise<GoveeDeviceCollection> {
+  public async getAllGroup(): Promise<GoveeControlGroup> {
     const devices: GoveeDevice[] = await this.getDevices();
-    const collection: GoveeDeviceCollection = new GoveeDeviceCollection(devices);
-    return collection;
+    const controlGroup: GoveeControlGroup = new GoveeControlGroup(devices);
+    return controlGroup;
   }
 
   /**
-   * Given a list of device names as a string, return a DeviceCollection containing
+   * Given a list of device names as a string, return a GoveeControlGroup containing
    * devices that match the names given. The names are case sensitive.
    */
-  public async getCollection(deviceNames: string[]): Promise<GoveeDeviceCollection> {
+  public async getControlGroup(deviceNames: string[]): Promise<GoveeControlGroup> {
     const devices: GoveeDevice[] = (await this.getDevices()).filter((device: GoveeDevice) => {
       return deviceNames.some((desiredName: string) => device.name === desiredName);
     });
-    const collection: GoveeDeviceCollection = new GoveeDeviceCollection(devices);
-    return collection;
+    const controlGroup: GoveeControlGroup = new GoveeControlGroup(devices);
+    return controlGroup;
   }
 
   public async getDeviceNames(): Promise<string[]> {
