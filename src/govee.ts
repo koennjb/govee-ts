@@ -44,6 +44,9 @@ export default class Govee {
     this.apiKey = apiKey;
   }
 
+  /**
+   * Retrieve all devices from the Govee API
+   */
   private async retrieveDevices(): Promise<GoveeResponse<GoveeDevice[]>> {
     const result = await axios.get(BASE_PATH + '/devices', {
       headers: {
@@ -69,6 +72,10 @@ export default class Govee {
     };
   }
 
+  /**
+   * If devices have already been retrieved, return the cached list. Otherwise,
+   * fetch the complete list of devices from the Govee API and return them.
+   */
   public async getDevices(): Promise<GoveeDevice[]> {
     if (this.devices.size <= 0) {
       const deviceList = await this.retrieveDevices();
@@ -79,6 +86,9 @@ export default class Govee {
     return Array.from(this.devices.values());
   }
 
+  /**
+   * Get a DeviceControlGroup for all devices
+   */
   public async getAllGroup(): Promise<GoveeControlGroup> {
     const devices: GoveeDevice[] = await this.getDevices();
     const controlGroup: GoveeControlGroup = new GoveeControlGroup(devices);
@@ -97,16 +107,28 @@ export default class Govee {
     return controlGroup;
   }
 
+  /**
+   * Return an array of all device names
+   */
   public async getDeviceNames(): Promise<string[]> {
     return (await this.getDevices()).map((device: GoveeDevice) => {
       return device.name;
     });
   }
 
+  /**
+   * Get a device from the map of cached devices. Name is case sensitive.
+   * @param name The device name to get
+   */
   public getDevice(name: string): GoveeDevice | undefined {
     return this.devices.get(name);
   }
 
+  /**
+   * Gets the state for a specific device from the Govee API
+   * @param device The device name to get state for
+   * @param model The device model name
+   */
   public async getState(device: string, model: string): Promise<GoveeResponse<DeviceState>> {
     const result = await axios.get(BASE_PATH + '/devices/state', {
       params: {
@@ -126,6 +148,12 @@ export default class Govee {
     };
   }
 
+  /**
+   * Uses the Govee API to turn on or off a specific device
+   * @param device The device name to set power for
+   * @param model The model to set power for
+   * @param power True for on, false for off
+   */
   public async setPower(
     device: string,
     model: string,
@@ -156,6 +184,12 @@ export default class Govee {
     };
   }
 
+  /**
+   * Uses the Govee API to set the brightness for a specific device
+   * @param device The device name
+   * @param model The device model
+   * @param brightness The brightness (0-100)
+   */
   public async setBrightness(
     device: string,
     model: string,
@@ -186,6 +220,12 @@ export default class Govee {
     };
   }
 
+  /**
+   * Uses the Govee API to set the color of a device
+   * @param device The device name
+   * @param model The device model
+   * @param color The RGB color to set
+   */
   public async setColor(
     device: string,
     model: string,
@@ -216,6 +256,12 @@ export default class Govee {
     };
   }
 
+  /**
+   * Sets the color temperature for a specific device
+   * @param device The device name
+   * @param model The device model
+   * @param colorTem The kelvin color temperature to set
+   */
   public async setTemperature(
     device: string,
     model: string,

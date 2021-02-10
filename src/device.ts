@@ -1,5 +1,8 @@
 import Govee, { DeviceState, GoveeColor } from './govee';
 
+/**
+ * Class to control a specific device.
+ */
 export class GoveeDevice {
   name: string;
   model: string;
@@ -27,6 +30,9 @@ export class GoveeDevice {
     this.govee = govee;
   }
 
+  /**
+   * Get the current state of the device.
+   */
   public async getState(): Promise<DeviceState | undefined> {
     const result = await this.govee.getState(this.device, this.model);
     if (result.code === 200) {
@@ -36,6 +42,9 @@ export class GoveeDevice {
     }
   }
 
+  /**
+   * Turn the device on
+   */
   public async turnOn(): Promise<boolean> {
     const result = await this.govee.setPower(this.device, this.model, true);
     if (result.code == 200) {
@@ -45,6 +54,9 @@ export class GoveeDevice {
     }
   }
 
+  /**
+   * Turns the device off
+   */
   public async turnOff(): Promise<boolean> {
     const result = await this.govee.setPower(this.device, this.model, false);
     if (result.code == 200) {
@@ -54,6 +66,10 @@ export class GoveeDevice {
     }
   }
 
+  /**
+   * Sets the brigtness of the device
+   * @param brightness the brightness to set to (0-100)
+   */
   public async setBrightness(brightness: number): Promise<boolean> {
     const result = await this.govee.setBrightness(this.device, this.model, brightness);
     if (result.code == 200) {
@@ -63,6 +79,10 @@ export class GoveeDevice {
     }
   }
 
+  /**
+   * Sets the color of the device using RGB
+   * @param color The RGB color object
+   */
   public async setRGBColor(color: GoveeColor): Promise<boolean> {
     const result = await this.govee.setColor(this.device, this.model, color);
     if (result.code == 200) {
@@ -72,6 +92,10 @@ export class GoveeDevice {
     }
   }
 
+  /**
+   * Sets the color of the device using a hex code
+   * @param hex The hex code to set to
+   */
   public async setHexColor(hex: string): Promise<boolean> {
     const result = await this.govee.setColor(this.device, this.model, this.hexToRgb(hex));
     if (result.code == 200) {
@@ -81,6 +105,10 @@ export class GoveeDevice {
     }
   }
 
+  /**
+   * Sets the devices color temperature
+   * @param temp The temperature in kelvin to set to
+   */
   public async setColorTemperature(temp: number): Promise<boolean> {
     const result = await this.govee.setTemperature(this.device, this.model, temp);
     if (result.code == 200) {
@@ -90,6 +118,10 @@ export class GoveeDevice {
     }
   }
 
+  /**
+   * Converts from hex color to RGB. # does not need to be included.
+   * @param color Hex color code
+   */
   private hexToRgb(color: string): GoveeColor {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
     return result
