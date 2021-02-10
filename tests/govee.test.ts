@@ -61,14 +61,14 @@ describe('Govee', () => {
   });
 
   it('gets a control group of all devices', async () => {
-    const result = await govee.getAllGroup();
+    const result = await govee.getAllControlGroup();
     expect(result.devices.length).toBe(2);
     expect(result.devices[0].name).toBe('test1');
     expect(result.devices[1].name).toBe('test2');
   });
 
   it('gets a control group of all devices', async () => {
-    const result = await govee.getAllGroup();
+    const result = await govee.getAllControlGroup();
     expect(result.devices.length).toBe(2);
     expect(result.devices[0].name).toBe('test1');
     expect(result.devices[1].name).toBe('test2');

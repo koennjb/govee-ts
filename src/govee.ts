@@ -89,7 +89,7 @@ export default class Govee {
   /**
    * Get a DeviceControlGroup for all devices
    */
-  public async getAllGroup(): Promise<GoveeControlGroup> {
+  public async getAllControlGroup(): Promise<GoveeControlGroup> {
     const devices: GoveeDevice[] = await this.getDevices();
     const controlGroup: GoveeControlGroup = new GoveeControlGroup(devices);
     return controlGroup;
